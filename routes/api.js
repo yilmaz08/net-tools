@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 const net = require('net');
 const dns = require('dns');
+const Traceroute = require('nodejs-traceroute');
 
 function check_port(host, port, timeout) {
   return new Promise((resolve) => {
@@ -16,7 +17,7 @@ function check_port(host, port, timeout) {
     socket.on('timeout', () => { isOpen = false; socket.destroy(); });
     socket.on('error', (err) => { isOpen = false; socket.destroy(); });
 
-    socket.on('close', () => { console.log("lesgoo: " + port); resolve(isOpen); });
+    socket.on('close', () => { resolve(isOpen); });
 
     socket.connect(port, host);
   });
@@ -38,6 +39,18 @@ function rdns_lookup(ip) {
       if (err) { resolve([]); }
       else { resolve(hostnames); }
     });
+  });
+}
+function traceroute(host) {
+  return new Promise((resolve) => {
+    let hops = [];
+
+    const tracer = new Traceroute();
+    tracer
+      .on('hop', (hop) => { hops.push(hop); })
+      .on('close', () => { resolve(hops); });
+
+    tracer.trace(host);
   });
 }
 
@@ -93,6 +106,17 @@ router.post('/rdns', async function(req, res) {
   if (!ip) { res.status(400).json({message: 'IP is required'}); return; }
 
   try { result = await rdns_lookup(ip); }
+  catch { result = null; }
+
+  res.json(result);
+});
+
+// Traceroute
+router.post('/traceroute', async function(req, res) {
+  let host = req.query.host;
+  if (!host) { res.status(400).json({message: 'Host is required'}); return; }
+
+  try { result = await traceroute(host); }
   catch { result = null; }
 
   res.json(result);
