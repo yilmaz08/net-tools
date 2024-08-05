@@ -1,0 +1,16 @@
+extends layout
+
+block title
+    title DNS Lookup - net-tools
+
+block content
+    h1 DNS Lookup
+    label(for='domain') Domain:
+    input(type='text', name='domain', id='domain')
+    label(for='types') Types:
+    input(type='text', name='types', id='types', value='A,AAAA,MX,TXT,CNAME')
+    input(type='submit', value='Check', id='submit')
+    
+    ul(id='output')
+
+    script(src='/javascripts/dns.js')

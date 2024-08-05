@@ -1,0 +1,14 @@
+extends layout
+
+block title
+    title Reverse DNS Lookup - net-tools
+
+block content
+    h1 Reverse DNS Lookup
+    label(for='ip') IP:
+    input(type='text', name='ip', id='ip')
+    input(type='submit', value='Check', id='submit')
+    
+    ul(id='output')
+
+    script(src='/javascripts/rdns.js')

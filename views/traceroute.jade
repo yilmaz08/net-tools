@@ -1,0 +1,14 @@
+extends layout
+
+block title
+    title Traceroute - net-tools
+
+block content
+    h1 Traceroute
+    label(for='host') Host:
+    input(type='text', name='host', id='host')
+    input(type='submit', value='Check', id='submit')
+    
+    ul(id='output')
+
+    script(src='/javascripts/traceroute.js')
