@@ -3,6 +3,7 @@ var router = express.Router();
 const net = require('net');
 const dns = require('dns');
 const Traceroute = require('nodejs-traceroute');
+const ping = require('ping');
 
 function check_port(host, port, timeout) {
   return new Promise((resolve) => {
@@ -51,6 +52,13 @@ function traceroute(host) {
       .on('close', () => { resolve(hops); });
 
     tracer.trace(host);
+  });
+}
+function ping_host(host) {
+  return new Promise((resolve) => {
+    ping.sys.probe(host, (isAlive) => {
+      resolve(isAlive);
+    });
   });
 }
 
@@ -117,6 +125,16 @@ router.post('/traceroute', async function(req, res) {
   if (!host) { res.status(400).json({message: 'Host is required'}); return; }
 
   try { result = await traceroute(host); }
+  catch { result = null; }
+
+  res.json(result);
+});
+// Ping
+router.post('/ping', async function(req, res) {
+  let host = req.query.host;
+  if (!host) { res.status(400).json({message: 'Host is required'}); return; }
+
+  try { result = await ping_host(host); }
   catch { result = null; }
 
   res.json(result);

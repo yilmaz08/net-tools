@@ -1,0 +1,14 @@
+extends layout
+
+block title
+    title Ping - net-tools
+
+block content
+    h1 Ping
+    label(for='domain') Host:
+    input(type='text', name='host', id='host')
+    input(type='submit', value='Check', id='submit')
+    
+    ul(id='output')
+
+    script(src='/javascripts/ping.js')
